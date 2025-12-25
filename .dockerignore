@@ -1,0 +1,28 @@
+
+# `.dockerignore`
+
+# Directorios generados por Go
+vendor/
+.cache/
+/pkg/
+
+# Archivos binarios y ejecutables locales (evita copiar el binario que ya tienes en tu host)
+*.exe
+*.dll
+*.so
+/bin/
+/tmp/
+/dist/
+*.test
+
+# Archivos de desarrollo/entorno local
+.env
+.env.*
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Control de versiones
+.git
+.gitignore
