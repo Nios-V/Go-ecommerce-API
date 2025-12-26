@@ -7,7 +7,6 @@ import (
 )
 
 type Order struct {
-	Base
 	UserID            uuid.UUID          `gorm:"type:uuid;not null" json:"user_id"`
 	Total             float64            `gorm:"type:decimal(10,2);not null" json:"total"`
 	Status            *enums.OrderStatus `gorm:"type:varchar(50)" json:"status"`
@@ -18,6 +17,9 @@ type Order struct {
 	BillingAddress  Address     `gorm:"foreignKey:BillingAddressID;references:ID" json:"billing_address"`
 	Items           []OrderItem `gorm:"foreignKey:OrderID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"items"`
 	Payment         Payment     `gorm:"foreignKey:OrderID" json:"payment"`
+	User            User        `gorm:"foreignKey:UserID;references:ID" json:"user"`
+
+	Base
 }
 
 func (o *Order) BeforeSave(tx *gorm.DB) (err error) {

@@ -10,12 +10,13 @@ import (
 )
 
 type Payment struct {
-	Base
 	OrderID uuid.UUID            `gorm:"type:uuid;not null" json:"order_id"`
 	Amount  float64              `gorm:"not null" json:"amount"`
 	Method  *enums.PaymentMethod `gorm:"type:varchar(50);not null" json:"method"`
 	Status  *enums.PaymentStatus `gorm:"type:varchar(50);not null" json:"status"`
 	PaidAt  *time.Time           `json:"paid_at,omitempty"`
+
+	Base
 }
 
 func (p *Payment) BeforeSave(tx *gorm.DB) (err error) {

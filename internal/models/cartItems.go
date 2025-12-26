@@ -9,4 +9,6 @@ type CartItem struct {
 	Price     float64   `gorm:"type:decimal(10,2);not null" json:"price"`
 
 	Product Product `gorm:"foreignKey:ProductID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"product"`
+
+	Base
 }

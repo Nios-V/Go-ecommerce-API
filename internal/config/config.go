@@ -15,11 +15,14 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		log.Println(".env file not found, reading configuration from environment variables")
+	}
 
-	dsn := os.Getenv("DB_URL")
+	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		log.Fatal("DB_URL not defined")
+		log.Fatal("DATABASE_URL not defined")
 	}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
