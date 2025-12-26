@@ -7,13 +7,25 @@ import (
 	"os"
 
 	"github.com/Nios-V/Go-ecommerce-API/internal/config"
+	"github.com/Nios-V/Go-ecommerce-API/internal/models"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
 	cfg := config.LoadConfig()
-	err := cfg.DB.AutoMigrate()
+	err := cfg.DB.AutoMigrate(
+		&models.Role{},
+		&models.User{},
+		&models.Address{},
+		&models.Category{},
+		&models.Product{},
+		&models.Cart{},
+		&models.CartItem{},
+		&models.Order{},
+		&models.OrderItem{},
+		&models.Payment{},
+	)
 	if err != nil {
 		log.Fatal("Migration Error: ", err)
 	}
