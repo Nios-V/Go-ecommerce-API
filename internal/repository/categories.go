@@ -9,6 +9,7 @@ import (
 
 type CategoryRepository interface {
 	BaseRepository[models.Category]
+	GetByName(ctx context.Context, name string) (*models.Category, error)
 }
 
 type categoryRepository struct {
