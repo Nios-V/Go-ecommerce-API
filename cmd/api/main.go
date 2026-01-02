@@ -7,9 +7,12 @@ import (
 	"os"
 
 	"github.com/Nios-V/Go-ecommerce-API/internal/config"
+	"github.com/Nios-V/Go-ecommerce-API/internal/handler"
 	"github.com/Nios-V/Go-ecommerce-API/internal/models"
+	"github.com/Nios-V/Go-ecommerce-API/internal/repository"
+	"github.com/Nios-V/Go-ecommerce-API/internal/router"
+	"github.com/Nios-V/Go-ecommerce-API/internal/service"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
@@ -30,15 +33,19 @@ func main() {
 		log.Fatal("Migration Error: ", err)
 	}
 
+	catRepo := repository.NewCategoryRepository(cfg.DB)
+	// TODO: Initialize other repositories
+
+	catService := service.NewCategoryService(cfg.DB, catRepo)
+	// TODO: Initialize other services
+
 	r := chi.NewRouter()
 
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	h := &handler.Container{
+		Category: handler.NewCategoryHandler(catService),
+	}
 
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
-	})
+	router.SetupRoutes(r, h)
 
 	port := os.Getenv("PORT")
 	if port == "" {
