@@ -9,9 +9,7 @@ import (
 	"github.com/Nios-V/Go-ecommerce-API/internal/config"
 	"github.com/Nios-V/Go-ecommerce-API/internal/handler"
 	"github.com/Nios-V/Go-ecommerce-API/internal/models"
-	"github.com/Nios-V/Go-ecommerce-API/internal/repository"
 	"github.com/Nios-V/Go-ecommerce-API/internal/router"
-	"github.com/Nios-V/Go-ecommerce-API/internal/service"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -33,19 +31,10 @@ func main() {
 		log.Fatal("Migration Error: ", err)
 	}
 
-	catRepo := repository.NewCategoryRepository(cfg.DB)
-	// TODO: Initialize other repositories
-
-	catService := service.NewCategoryService(cfg.DB, catRepo)
-	// TODO: Initialize other services
+	registry := handler.NewRegistry(cfg.DB)
 
 	r := chi.NewRouter()
-
-	h := &handler.Container{
-		Category: handler.NewCategoryHandler(catService),
-	}
-
-	router.SetupRoutes(r, h)
+	router.SetupRoutes(r, registry)
 
 	port := os.Getenv("PORT")
 	if port == "" {

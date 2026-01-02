@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func SetupRoutes(r *chi.Mux, h *handler.Container) {
+func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
