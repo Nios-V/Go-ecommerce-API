@@ -32,5 +32,5 @@ func (s *BaseService[T]) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 func (s *BaseService[T]) List(ctx context.Context, offset, limit int) ([]T, error) {
-	return s.repo.List(ctx, offset, limit)
+	return s.repo.List(ctx, limit, offset)
 }

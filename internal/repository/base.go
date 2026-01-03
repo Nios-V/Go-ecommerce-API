@@ -27,7 +27,7 @@ func (r *baseRepository[T]) Create(ctx context.Context, entity *T) error {
 	return r.db.WithContext(ctx).Create(entity).Error
 }
 
-func (r *baseRepository[T]) List(ctx context.Context, limit, offset int) ([]T, error) {
+func (r *baseRepository[T]) List(ctx context.Context, limit int, offset int) ([]T, error) {
 	var entities []T
 	err := r.db.WithContext(ctx).Limit(limit).Offset(offset).Find(&entities).Error
 	return entities, err

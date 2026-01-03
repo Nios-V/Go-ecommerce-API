@@ -25,5 +25,6 @@ func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 func registerCategory(r chi.Router, h *handler.CategoryHandler) {
 	r.Route("/categories", func(r chi.Router) {
 		r.Get("/{id}", h.GetByID)
+		r.Get("/", h.List)
 	})
 }
