@@ -2,6 +2,8 @@ package router
 
 import (
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/Nios-V/Go-ecommerce-API/internal/handler"
 	"github.com/go-chi/chi/v5"
@@ -11,6 +13,7 @@ import (
 func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(MaxBodySize)
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -19,6 +22,18 @@ func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		registerCategory(r, h.Category)
+	})
+}
+
+func MaxBodySize(next http.Handler) http.Handler {
+	maxBytesStr := os.Getenv("MAX_BODY_SIZE")
+	maxBytes, err := strconv.ParseInt(maxBytesStr, 10, 64)
+	if err != nil {
+		maxBytes = 1048576
+	}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, maxBytes)
+		next.ServeHTTP(w, r)
 	})
 }
 
