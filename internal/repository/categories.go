@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Nios-V/Go-ecommerce-API/internal/models"
 	"gorm.io/gorm"
@@ -31,6 +32,9 @@ func (r *categoryRepository) GetByName(ctx context.Context, name string) (*model
 		First(&category).Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

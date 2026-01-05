@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"strconv"
 
+	"github.com/Nios-V/Go-ecommerce-API/internal/models"
 	"github.com/Nios-V/Go-ecommerce-API/internal/response"
 	"github.com/Nios-V/Go-ecommerce-API/internal/service"
 	"github.com/go-chi/chi/v5"
@@ -60,4 +64,37 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.JSON(w, http.StatusOK, categories)
+}
+
+func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var category models.Category
+
+	err := json.NewDecoder(r.Body).Decode(&category)
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			response.Error(w, http.StatusBadRequest, "Empty body")
+			return
+		}
+		response.Error(w, http.StatusBadRequest, "Invalid JSON")
+		return
+	}
+
+	defer r.Body.Close()
+	if category.Name == "" {
+		response.Error(w, http.StatusBadRequest, "Category name needed")
+		return
+	}
+
+	if len(category.Name) < 3 {
+		response.Error(w, http.StatusBadRequest, "Category name must be longer than 3 characters")
+		return
+	}
+
+	err = h.categoryService.Create(r.Context(), &category)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Internal Error")
+		return
+	}
+
+	response.JSON(w, http.StatusCreated, category)
 }
