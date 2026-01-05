@@ -28,7 +28,7 @@ func NewCategoryRepository(db *gorm.DB) CategoryRepository {
 func (r *categoryRepository) GetByName(ctx context.Context, name string) (*models.Category, error) {
 	var category models.Category
 	err := r.db.WithContext(ctx).
-		Where("name = ?", name).
+		Where("name ILIKE ?", name).
 		First(&category).Error
 
 	if err != nil {

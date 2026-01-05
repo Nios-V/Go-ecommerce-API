@@ -7,20 +7,23 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Nios-V/Go-ecommerce-API/internal/models"
+	"github.com/Nios-V/Go-ecommerce-API/internal/handler/dto"
 	"github.com/Nios-V/Go-ecommerce-API/internal/response"
 	"github.com/Nios-V/Go-ecommerce-API/internal/service"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
 type CategoryHandler struct {
 	categoryService *service.CategoryService
+	validate        *validator.Validate
 }
 
-func NewCategoryHandler(s *service.CategoryService) *CategoryHandler {
+func NewCategoryHandler(s *service.CategoryService, v *validator.Validate) *CategoryHandler {
 	return &CategoryHandler{
 		categoryService: s,
+		validate:        v,
 	}
 }
 
@@ -67,9 +70,9 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var category models.Category
+	var req dto.CreateCategoryRequest
 
-	err := json.NewDecoder(r.Body).Decode(&category)
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		if errors.Is(err, io.EOF) {
 			response.Error(w, http.StatusBadRequest, "Empty body")
@@ -80,18 +83,19 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer r.Body.Close()
-	if category.Name == "" {
-		response.Error(w, http.StatusBadRequest, "Category name needed")
+	if err := h.validate.Struct(req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Validation Error: "+err.Error())
 		return
 	}
 
-	if len(category.Name) < 3 {
-		response.Error(w, http.StatusBadRequest, "Category name must be longer than 3 characters")
-		return
-	}
+	category := *req.ToModel()
 
 	err = h.categoryService.Create(r.Context(), &category)
 	if err != nil {
+		if errors.Is(err, service.ErrCategoryExists) {
+			response.Error(w, http.StatusConflict, "Category with this name already exists")
+			return
+		}
 		response.Error(w, http.StatusInternalServerError, "Internal Error")
 		return
 	}
