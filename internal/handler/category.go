@@ -42,7 +42,9 @@ func (h *CategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.JSON(w, http.StatusOK, category)
+	res := dto.ToCategoryResponse(category)
+
+	response.JSON(w, http.StatusOK, res)
 }
 
 func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {

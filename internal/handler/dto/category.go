@@ -2,6 +2,20 @@ package dto
 
 import "github.com/Nios-V/Go-ecommerce-API/internal/models"
 
+type CategoryResponse struct {
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
+}
+
+func ToCategoryResponse(category *models.Category) CategoryResponse {
+	return CategoryResponse{
+		ID:          category.ID.String(),
+		Name:        category.Name,
+		Description: category.Description,
+	}
+}
+
 type CreateCategoryRequest struct {
 	Name        string  `json:"name" validate:"required,min=3,max=50"`
 	Description *string `json:"description" validate:"max=255"`
