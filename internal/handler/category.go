@@ -145,3 +145,20 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	response.JSON(w, http.StatusOK, category)
 }
+
+func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	IdStr := chi.URLParam(r, "id")
+	id, err := uuid.Parse(IdStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	err = h.categoryService.Delete(r.Context(), id)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Failed to delete category")
+		return
+	}
+
+	response.JSON(w, http.StatusNoContent, nil)
+}
