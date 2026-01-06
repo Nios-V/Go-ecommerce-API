@@ -88,7 +88,7 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	category := *req.ToModel()
+	category := *req.CreateCategoryToModel()
 
 	err = h.categoryService.Create(r.Context(), &category)
 	if err != nil {
@@ -101,4 +101,47 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.JSON(w, http.StatusCreated, category)
+}
+
+func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	category, err := h.categoryService.GetByID(r.Context(), id)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Category not found")
+		return
+	}
+
+	var req dto.UpdateCategoryRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			response.Error(w, http.StatusBadRequest, "Empty body")
+			return
+		}
+		response.Error(w, http.StatusBadRequest, "Invalid JSON")
+		return
+	}
+
+	defer r.Body.Close()
+	if err := h.validate.Struct(req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Validation Error: "+err.Error())
+		return
+	}
+
+	req.UpdateCategoryToModel(category)
+
+	err = h.categoryService.Update(r.Context(), category)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Failed to update category")
+		return
+	}
+
+	response.JSON(w, http.StatusOK, category)
 }
