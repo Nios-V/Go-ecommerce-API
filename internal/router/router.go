@@ -41,5 +41,8 @@ func registerCategory(r chi.Router, h *handler.CategoryHandler) {
 	r.Route("/categories", func(r chi.Router) {
 		r.Get("/{id}", h.GetByID)
 		r.Get("/", h.List)
+		r.Post("/", h.Create)
+		r.Put("/{id}", h.Update)
+		r.Delete("/{id}", h.Delete)
 	})
 }
