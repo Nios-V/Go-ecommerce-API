@@ -16,6 +16,14 @@ func ToCategoryResponse(category *models.Category) CategoryResponse {
 	}
 }
 
+func ToCategoryListResponse(categories []models.Category) []CategoryResponse {
+	res := make([]CategoryResponse, len(categories))
+	for i, c := range categories {
+		res[i] = ToCategoryResponse(&c)
+	}
+	return res
+}
+
 type CreateCategoryRequest struct {
 	Name        string  `json:"name" validate:"required,min=3,max=50"`
 	Description *string `json:"description" validate:"max=255"`

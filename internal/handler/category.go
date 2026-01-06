@@ -68,7 +68,9 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.JSON(w, http.StatusOK, categories)
+	res := dto.ToCategoryListResponse(categories)
+
+	response.JSON(w, http.StatusOK, res)
 }
 
 func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
