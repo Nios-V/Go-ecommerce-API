@@ -9,6 +9,7 @@ import (
 
 type Registry struct {
 	Category *CategoryHandler
+	Product  *ProductHandler
 	// TODO: Add other handlers
 	Validate *validator.Validate
 }
@@ -24,16 +25,18 @@ func NewRegistry(db *gorm.DB) *Registry {
 	// orderItemRepo := repository.NewOrderItemRepository(db)
 	// orderRepo := repository.NewOrderRepository(db)
 	// paymentRepo := repository.NewPaymentRepository(db)
-	// productRepo := repository.NewProductRepository(db)
+	productRepo := repository.NewProductRepository(db)
 	// userRepo := repository.NewUserRepository(db)
 	// roleRepo := repository.NewRoleRepository(db)
 
 	// Initialize services
 	categoryService := service.NewCategoryService(db, categoryRepo)
+	productService := service.NewProductService(db, productRepo)
 
 	// Initialize handlers
 	return &Registry{
 		Category: NewCategoryHandler(categoryService, v),
+		Product:  NewProductHandler(productService, v),
 		Validate: v,
 	}
 }

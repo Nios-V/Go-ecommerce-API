@@ -22,6 +22,7 @@ func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		registerCategory(r, h.Category)
+		registerProduct(r, h.Product)
 	})
 }
 
@@ -43,6 +44,17 @@ func registerCategory(r chi.Router, h *handler.CategoryHandler) {
 		r.Get("/", h.List)
 		r.Post("/", h.Create)
 		r.Put("/{id}", h.Update)
+		r.Delete("/{id}", h.Delete)
+	})
+}
+
+func registerProduct(r chi.Router, h *handler.ProductHandler) {
+	r.Route("/products", func(r chi.Router) {
+		r.Get("/{id}", h.GetByID)
+		r.Get("/", h.List)
+		r.Post("/", h.Create)
+		r.Put("/{id}", h.Update)
+		r.Put("/{id}/stock", h.UpdateStock)
 		r.Delete("/{id}", h.Delete)
 	})
 }
