@@ -10,6 +10,7 @@ import (
 type UserRepository interface {
 	BaseRepository[models.User]
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
+	WithTx(tx *gorm.DB) UserRepository
 }
 
 type userRepository struct {
@@ -35,4 +36,8 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*models.
 	}
 
 	return &user, nil
+}
+
+func (r *userRepository) WithTx(tx *gorm.DB) UserRepository {
+	return NewUserRepository(tx)
 }

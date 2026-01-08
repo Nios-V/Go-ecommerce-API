@@ -10,6 +10,7 @@ import (
 type RoleRepository interface {
 	BaseRepository[models.Role]
 	GetByName(ctx context.Context, name string) (*models.Role, error)
+	WithTx(tx *gorm.DB) RoleRepository
 }
 
 type roleRepository struct {
@@ -35,4 +36,8 @@ func (r *roleRepository) GetByName(ctx context.Context, name string) (*models.Ro
 	}
 
 	return &role, nil
+}
+
+func (r *roleRepository) WithTx(tx *gorm.DB) RoleRepository {
+	return NewRoleRepository(tx)
 }
