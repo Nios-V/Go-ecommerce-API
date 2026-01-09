@@ -8,6 +8,7 @@ import (
 )
 
 type Registry struct {
+	Address  *AddressHandler
 	Category *CategoryHandler
 	Product  *ProductHandler
 	User     *UserHandler
@@ -19,7 +20,7 @@ func NewRegistry(db *gorm.DB) *Registry {
 	v := validator.New()
 
 	// Initialize repositories
-	// addressRepo := repository.NewAddressRepository(db)
+	addressRepo := repository.NewAddressRepository(db)
 	// cartItemRepo := repository.NewCartItemRepository(db)
 	cartRepo := repository.NewCartRepository(db)
 	categoryRepo := repository.NewCategoryRepository(db)
@@ -34,9 +35,11 @@ func NewRegistry(db *gorm.DB) *Registry {
 	categoryService := service.NewCategoryService(db, categoryRepo)
 	productService := service.NewProductService(db, productRepo)
 	userService := service.NewUserService(db, userRepo, cartRepo, roleRepo)
+	addressService := service.NewAddressService(db, addressRepo)
 
 	// Initialize handlers
 	return &Registry{
+		Address:  NewAddressHandler(addressService, v),
 		Category: NewCategoryHandler(categoryService, v),
 		Product:  NewProductHandler(productService, v),
 		User:     NewUserHandler(userService, v),

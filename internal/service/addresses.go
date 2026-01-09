@@ -10,7 +10,7 @@ type AddressService struct {
 	*BaseService[models.Address]
 }
 
-func NewAddressRepository(db *gorm.DB, addressRepo repository.AddressRepository) *AddressService {
+func NewAddressService(db *gorm.DB, addressRepo repository.AddressRepository) *AddressService {
 	return &AddressService{
 		BaseService: NewBaseService(addressRepo),
 	}

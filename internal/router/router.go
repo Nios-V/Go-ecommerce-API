@@ -24,6 +24,7 @@ func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 		registerCategory(r, h.Category)
 		registerProduct(r, h.Product)
 		registerUser(r, h.User)
+		registerAddress(r, h.Address)
 	})
 }
 
@@ -64,5 +65,15 @@ func registerUser(r chi.Router, h *handler.UserHandler) {
 	r.Route("/users", func(r chi.Router) {
 		r.Get("/{id}", h.GetByID)
 		r.Post("/", h.Create)
+	})
+}
+
+func registerAddress(r chi.Router, h *handler.AddressHandler) {
+	r.Route("/addresses", func(r chi.Router) {
+		r.Get("/{id}", h.GetByID)
+		r.Get("/", h.List)
+		r.Post("/", h.Create)
+		r.Put("/{id}", h.Update)
+		r.Delete("/{id}", h.Delete)
 	})
 }
