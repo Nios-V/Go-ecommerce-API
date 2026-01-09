@@ -11,6 +11,7 @@ import (
 type OrderRepository interface {
 	BaseRepository[models.Order]
 	GetAllByUserID(ctx context.Context, userID uuid.UUID) ([]models.Order, error)
+	WithTx(tx *gorm.DB) OrderRepository
 }
 
 type orderRepository struct {
@@ -23,6 +24,10 @@ func NewOrderRepository(db *gorm.DB) OrderRepository {
 		BaseRepository: NewBaseRepository[models.Order](db),
 		db:             db,
 	}
+}
+
+func (r *orderRepository) WithTx(tx *gorm.DB) OrderRepository {
+	return NewOrderRepository(tx)
 }
 
 func (r *orderRepository) GetAllByUserID(ctx context.Context, userID uuid.UUID) ([]models.Order, error) {

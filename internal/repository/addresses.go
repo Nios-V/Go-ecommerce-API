@@ -13,6 +13,7 @@ type AddressRepository interface {
 	GetAllByUserID(ctx context.Context, userID uuid.UUID) ([]models.Address, error)
 	GetDefaultShippingByUserID(ctx context.Context, userID uuid.UUID) (*models.Address, error)
 	GetDefaultBillingByUserID(ctx context.Context, userID uuid.UUID) (*models.Address, error)
+	WithTx(tx *gorm.DB) AddressRepository
 }
 
 type addressRepository struct {
@@ -25,6 +26,10 @@ func NewAddressRepository(db *gorm.DB) AddressRepository {
 		BaseRepository: NewBaseRepository[models.Address](db),
 		db:             db,
 	}
+}
+
+func (r *addressRepository) WithTx(tx *gorm.DB) AddressRepository {
+	return NewAddressRepository(tx)
 }
 
 func (r *addressRepository) GetAllByUserID(ctx context.Context, userID uuid.UUID) ([]models.Address, error) {

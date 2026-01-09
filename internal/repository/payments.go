@@ -11,6 +11,7 @@ import (
 type PaymentRepository interface {
 	BaseRepository[models.Payment]
 	GetByOrderID(ctx context.Context, orderID uuid.UUID) (*models.Payment, error)
+	WithTx(tx *gorm.DB) PaymentRepository
 }
 
 type paymentRepository struct {
@@ -23,6 +24,10 @@ func NewPaymentRepository(db *gorm.DB) PaymentRepository {
 		BaseRepository: NewBaseRepository[models.Payment](db),
 		db:             db,
 	}
+}
+
+func (r *paymentRepository) WithTx(tx *gorm.DB) PaymentRepository {
+	return NewPaymentRepository(tx)
 }
 
 func (r *paymentRepository) GetByOrderID(ctx context.Context, orderID uuid.UUID) (*models.Payment, error) {

@@ -12,6 +12,7 @@ import (
 type ProductRepository interface {
 	BaseRepository[models.Product]
 	UpdateStock(ctx context.Context, productID uuid.UUID, quantity int) error
+	WithTx(tx *gorm.DB) ProductRepository
 }
 
 type productRepository struct {
@@ -24,6 +25,10 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 		BaseRepository: NewBaseRepository[models.Product](db),
 		db:             db,
 	}
+}
+
+func (r *productRepository) WithTx(tx *gorm.DB) ProductRepository {
+	return NewProductRepository(tx)
 }
 
 func (r *productRepository) UpdateStock(ctx context.Context, productID uuid.UUID, quantity int) error {

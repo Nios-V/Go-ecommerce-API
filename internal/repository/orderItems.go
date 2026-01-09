@@ -7,6 +7,7 @@ import (
 
 type OrderItemRepository interface {
 	BaseRepository[models.OrderItem]
+	WithTx(tx *gorm.DB) OrderItemRepository
 }
 
 type orderItemRepository struct {
@@ -19,4 +20,8 @@ func NewOrderItemRepository(db *gorm.DB) OrderItemRepository {
 		BaseRepository: NewBaseRepository[models.OrderItem](db),
 		db:             db,
 	}
+}
+
+func (r *orderItemRepository) WithTx(tx *gorm.DB) OrderItemRepository {
+	return NewOrderItemRepository(tx)
 }

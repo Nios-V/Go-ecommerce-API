@@ -11,6 +11,7 @@ import (
 type CategoryRepository interface {
 	BaseRepository[models.Category]
 	GetByName(ctx context.Context, name string) (*models.Category, error)
+	WithTx(tx *gorm.DB) CategoryRepository
 }
 
 type categoryRepository struct {
@@ -39,4 +40,8 @@ func (r *categoryRepository) GetByName(ctx context.Context, name string) (*model
 	}
 
 	return &category, nil
+}
+
+func (r *categoryRepository) WithTx(tx *gorm.DB) CategoryRepository {
+	return NewCategoryRepository(tx)
 }

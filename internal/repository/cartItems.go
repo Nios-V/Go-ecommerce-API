@@ -7,6 +7,7 @@ import (
 
 type CartItemRepository interface {
 	BaseRepository[models.CartItem]
+	WithTx(tx *gorm.DB) CartItemRepository
 }
 
 type cartItemRepository struct {
@@ -19,4 +20,8 @@ func NewCartItemRepository(db *gorm.DB) CartItemRepository {
 		BaseRepository: NewBaseRepository[models.CartItem](db),
 		db:             db,
 	}
+}
+
+func (r *cartItemRepository) WithTx(tx *gorm.DB) CartItemRepository {
+	return NewCartItemRepository(tx)
 }
