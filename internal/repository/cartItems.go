@@ -1,13 +1,17 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/Nios-V/Go-ecommerce-API/internal/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type CartItemRepository interface {
 	BaseRepository[models.CartItem]
 	WithTx(tx *gorm.DB) CartItemRepository
+	GetByCartAndProduct(ctx context.Context, cartID, productID uuid.UUID) (*models.CartItem, error)
 }
 
 type cartItemRepository struct {
@@ -24,4 +28,15 @@ func NewCartItemRepository(db *gorm.DB) CartItemRepository {
 
 func (r *cartItemRepository) WithTx(tx *gorm.DB) CartItemRepository {
 	return NewCartItemRepository(tx)
+}
+
+func (r *cartItemRepository) GetByCartAndProduct(ctx context.Context, cartID, productID uuid.UUID) (*models.CartItem, error) {
+	var cartItem models.CartItem
+	err := r.db.WithContext(ctx).
+		Where("cart_id = ? AND product_id = ? AND is_purchased = ?", cartID, productID, false).
+		First(&cartItem).Error
+	if err != nil {
+		return nil, err
+	}
+	return &cartItem, nil
 }
