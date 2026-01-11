@@ -9,8 +9,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var secretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
-
 type CustomClaims struct {
 	UserID uuid.UUID `json:"user_id"`
 	Email  string    `json:"email"`
@@ -19,6 +17,7 @@ type CustomClaims struct {
 }
 
 func GenerateJWT(userID uuid.UUID, email string, roles []string) (string, error) {
+	secretKey := []byte(os.Getenv("JWT_SECRET_KEY"))
 	claims := CustomClaims{
 		UserID: userID,
 		Email:  email,
@@ -29,13 +28,14 @@ func GenerateJWT(userID uuid.UUID, email string, roles []string) (string, error)
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(secretKey)
 }
 
 func ValidateJWT(token string) (*CustomClaims, error) {
+	secretKey := []byte(os.Getenv("JWT_SECRET_KEY"))
 	parsedToken, err := jwt.ParseWithClaims(token, &CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodECDSA); !ok {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
 		return secretKey, nil
