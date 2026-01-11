@@ -65,6 +65,8 @@ func registerUser(r chi.Router, h *handler.UserHandler) {
 	r.Route("/users", func(r chi.Router) {
 		r.Get("/{id}", h.GetByID)
 		r.Post("/", h.Create)
+		r.Put("/{id}", h.Update)
+		r.Post("/login", h.Login)
 	})
 }
 

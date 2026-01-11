@@ -45,6 +45,35 @@ func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
+	var req dto.LoginRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			response.Error(w, http.StatusBadRequest, "Empty body")
+			return
+		}
+		response.Error(w, http.StatusBadRequest, "Invalid JSON")
+		return
+	}
+
+	defer r.Body.Close()
+
+	if err := h.validate.Struct(req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Validation Error: "+err.Error())
+		return
+	}
+
+	user, err := h.userService.Login(r.Context(), req.Email, req.Password)
+	if err != nil {
+		response.Error(w, http.StatusUnauthorized, "Invalid email or password")
+		return
+	}
+
+	response.JSON(w, http.StatusOK, map[string]string{"token": user})
+}
+
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateUserRequest
 

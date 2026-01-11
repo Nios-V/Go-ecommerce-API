@@ -72,3 +72,8 @@ type UpdatePasswordRequest struct {
 func (r *UpdatePasswordRequest) UpdatePasswordToModel(user *models.User) {
 	user.Password = r.Password
 }
+
+type LoginRequest struct {
+	Email    string `json:"email" validate:"required,email,max=50"`
+	Password string `json:"password" validate:"required,min=6,max=100"`
+}
