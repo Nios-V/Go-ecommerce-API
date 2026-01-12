@@ -55,6 +55,7 @@ func registerCategory(r chi.Router, h *handler.CategoryHandler) {
 func registerCart(r chi.Router, h *handler.CartHandler) {
 	r.Route("/users/{user_id}/cart", func(r chi.Router) {
 		r.With(internalMiddleware.AuthMiddleware).Get("/", h.ViewCart)
+		r.With(internalMiddleware.AuthMiddleware).Delete("/{id}", h.ClearCart)
 		r.With(internalMiddleware.AuthMiddleware).Post("/items/{id}", h.AddItem)
 		r.With(internalMiddleware.AuthMiddleware).Delete("/items/{id}", h.RemoveItem)
 		r.With(internalMiddleware.AuthMiddleware).Put("/items/{id}", h.UpdateItemQuantity)

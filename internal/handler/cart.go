@@ -198,7 +198,31 @@ func (h *CartHandler) UpdateItemQuantity(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *CartHandler) ClearCart(w http.ResponseWriter, r *http.Request) {
-	// Implementation for clearing the cart
+	userIdStr := chi.URLParam(r, "user_id")
+	user_id, err := uuid.Parse(userIdStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	idStr := chi.URLParam(r, "id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	if user_id != r.Context().Value("user_id").(uuid.UUID) {
+		response.Error(w, http.StatusForbidden, "Access denied")
+		return
+	}
+
+	err = h.cartService.ClearCart(r.Context(), id)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Failed to clear cart")
+		return
+	}
+	response.JSON(w, http.StatusOK, map[string]string{"message": "Cart cleared"})
 }
 
 func (h *CartHandler) Checkout(w http.ResponseWriter, r *http.Request) {

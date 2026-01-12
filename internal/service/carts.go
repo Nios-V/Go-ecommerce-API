@@ -83,3 +83,7 @@ func (s *CartService) UpdateItemQuantity(ctx context.Context, cartID uuid.UUID, 
 	existingItem.Quantity = item.Quantity
 	return s.cartItemRepo.Update(ctx, existingItem)
 }
+
+func (s *CartService) ClearCart(ctx context.Context, cartID uuid.UUID) error {
+	return s.cartItemRepo.DeleteByCartID(ctx, cartID)
+}

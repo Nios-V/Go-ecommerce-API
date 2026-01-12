@@ -12,6 +12,7 @@ type CartItemRepository interface {
 	BaseRepository[models.CartItem]
 	WithTx(tx *gorm.DB) CartItemRepository
 	GetByCartAndProduct(ctx context.Context, cartID, productID uuid.UUID) (*models.CartItem, error)
+	DeleteByCartID(ctx context.Context, cartID uuid.UUID) error
 }
 
 type cartItemRepository struct {
@@ -39,4 +40,10 @@ func (r *cartItemRepository) GetByCartAndProduct(ctx context.Context, cartID, pr
 		return nil, err
 	}
 	return &cartItem, nil
+}
+
+func (r *cartItemRepository) DeleteByCartID(ctx context.Context, cartID uuid.UUID) error {
+	return r.db.WithContext(ctx).
+		Where("cart_id = ? AND is_purchased = ?", cartID, false).
+		Delete(&models.CartItem{}).Error
 }
