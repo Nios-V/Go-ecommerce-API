@@ -14,13 +14,15 @@ type CartService struct {
 	*BaseService[models.Cart]
 	repo         repository.CartRepository
 	cartItemRepo repository.CartItemRepository
+	productRepo  repository.ProductRepository
 }
 
-func NewCartService(db *gorm.DB, cartRepo repository.CartRepository, cartItemRepo repository.CartItemRepository) *CartService {
+func NewCartService(db *gorm.DB, cartRepo repository.CartRepository, cartItemRepo repository.CartItemRepository, productRepo repository.ProductRepository) *CartService {
 	return &CartService{
 		BaseService:  NewBaseService(cartRepo),
 		repo:         cartRepo,
 		cartItemRepo: cartItemRepo,
+		productRepo:  productRepo,
 	}
 }
 
@@ -61,4 +63,23 @@ func (s *CartService) RemoveItemFromCart(ctx context.Context, cartID uuid.UUID, 
 		return err
 	}
 	return nil
+}
+
+func (s *CartService) UpdateItemQuantity(ctx context.Context, cartID uuid.UUID, item *models.CartItem) error {
+	existingItem, err := s.cartItemRepo.GetByCartAndProduct(ctx, cartID, item.ProductID)
+	if err != nil {
+		return err
+	}
+
+	product, err := s.productRepo.GetByID(ctx, item.ProductID)
+	if err != nil {
+		return err
+	}
+
+	if item.Quantity > product.Stock {
+		return errors.New("insufficient stock for the requested quantity")
+	}
+
+	existingItem.Quantity = item.Quantity
+	return s.cartItemRepo.Update(ctx, existingItem)
 }

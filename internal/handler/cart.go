@@ -148,6 +148,55 @@ func (h *CartHandler) ViewCart(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+func (h *CartHandler) UpdateItemQuantity(w http.ResponseWriter, r *http.Request) {
+	var req dto.UpdateCartItemRequest
+
+	userIdStr := chi.URLParam(r, "user_id")
+	user_id, err := uuid.Parse(userIdStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	idStr := chi.URLParam(r, "id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	if user_id != r.Context().Value("user_id").(uuid.UUID) {
+		response.Error(w, http.StatusForbidden, "Access denied")
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			response.Error(w, http.StatusBadRequest, "Empty body")
+			return
+		}
+		response.Error(w, http.StatusBadRequest, "Invalid JSON")
+		return
+	}
+
+	defer r.Body.Close()
+	err = h.validate.Struct(&req)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Validation error: "+err.Error())
+		return
+	}
+
+	item := req.UpdateCartItemToModel()
+
+	err = h.cartService.UpdateItemQuantity(r.Context(), id, item)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Failed to update item quantity")
+		return
+	}
+	response.JSON(w, http.StatusOK, map[string]string{"message": "Item quantity updated"})
+}
+
 func (h *CartHandler) ClearCart(w http.ResponseWriter, r *http.Request) {
 	// Implementation for clearing the cart
 }

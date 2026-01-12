@@ -57,6 +57,7 @@ func registerCart(r chi.Router, h *handler.CartHandler) {
 		r.With(internalMiddleware.AuthMiddleware).Get("/", h.ViewCart)
 		r.With(internalMiddleware.AuthMiddleware).Post("/items/{id}", h.AddItem)
 		r.With(internalMiddleware.AuthMiddleware).Delete("/items/{id}", h.RemoveItem)
+		r.With(internalMiddleware.AuthMiddleware).Put("/items/{id}", h.UpdateItemQuantity)
 	})
 }
 

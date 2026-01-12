@@ -34,7 +34,7 @@ func NewRegistry(db *gorm.DB) *Registry {
 
 	// Initialize services
 	categoryService := service.NewCategoryService(db, categoryRepo)
-	cartService := service.NewCartService(db, cartRepo, cartItemRepo)
+	cartService := service.NewCartService(db, cartRepo, cartItemRepo, productRepo)
 	productService := service.NewProductService(db, productRepo)
 	userService := service.NewUserService(db, userRepo, cartRepo, roleRepo)
 	addressService := service.NewAddressService(db, addressRepo)

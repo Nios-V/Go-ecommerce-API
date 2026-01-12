@@ -56,3 +56,15 @@ func (r *RemoveCartItemRequest) RemoveCartItemToModel() *models.CartItem {
 		Quantity:  r.Quantity,
 	}
 }
+
+type UpdateCartItemRequest struct {
+	ProductID uuid.UUID `json:"product_id" validate:"required,uuid4"`
+	Quantity  int       `json:"quantity" validate:"required,min=1"`
+}
+
+func (r *UpdateCartItemRequest) UpdateCartItemToModel() *models.CartItem {
+	return &models.CartItem{
+		ProductID: r.ProductID,
+		Quantity:  r.Quantity,
+	}
+}
