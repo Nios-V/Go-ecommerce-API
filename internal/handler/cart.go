@@ -31,7 +31,7 @@ func (h *CartHandler) RemoveItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CartHandler) ViewCart(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
+	idStr := chi.URLParam(r, "user_id")
 
 	id, err := uuid.Parse(idStr)
 	if err != nil {
@@ -39,7 +39,7 @@ func (h *CartHandler) ViewCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if id != r.Context().Value("userID") {
+	if id != r.Context().Value("user_id").(uuid.UUID) {
 		response.Error(w, http.StatusForbidden, "Access denied")
 		return
 	}

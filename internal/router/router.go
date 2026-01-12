@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/Nios-V/Go-ecommerce-API/internal/handler"
+	internalMiddleware "github.com/Nios-V/Go-ecommerce-API/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -22,6 +23,7 @@ func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		registerCategory(r, h.Category)
+		registerCart(r, h.Cart)
 		registerProduct(r, h.Product)
 		registerUser(r, h.User)
 		registerAddress(r, h.Address)
@@ -47,6 +49,12 @@ func registerCategory(r chi.Router, h *handler.CategoryHandler) {
 		r.Post("/", h.Create)
 		r.Put("/{id}", h.Update)
 		r.Delete("/{id}", h.Delete)
+	})
+}
+
+func registerCart(r chi.Router, h *handler.CartHandler) {
+	r.Route("/carts", func(r chi.Router) {
+		r.With(internalMiddleware.AuthMiddleware).Get("/{user_id}", h.ViewCart)
 	})
 }
 
