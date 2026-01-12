@@ -143,7 +143,9 @@ func (h *CartHandler) ViewCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.JSON(w, http.StatusOK, cart)
+	res := dto.ToCartResponse(cart)
+
+	response.JSON(w, http.StatusOK, res)
 }
 
 func (h *CartHandler) ClearCart(w http.ResponseWriter, r *http.Request) {
