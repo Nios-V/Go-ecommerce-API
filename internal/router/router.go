@@ -53,8 +53,10 @@ func registerCategory(r chi.Router, h *handler.CategoryHandler) {
 }
 
 func registerCart(r chi.Router, h *handler.CartHandler) {
-	r.Route("/carts", func(r chi.Router) {
-		r.With(internalMiddleware.AuthMiddleware).Get("/{user_id}", h.ViewCart)
+	r.Route("/users/{user_id}/cart", func(r chi.Router) {
+		r.With(internalMiddleware.AuthMiddleware).Get("/", h.ViewCart)
+		r.With(internalMiddleware.AuthMiddleware).Post("/items/{id}", h.AddItem)
+		r.With(internalMiddleware.AuthMiddleware).Delete("/items/{id}", h.RemoveItem)
 	})
 }
 

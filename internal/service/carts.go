@@ -28,24 +28,19 @@ func (s *CartService) GetCartByUserID(ctx context.Context, userID uuid.UUID) (*m
 	return s.repo.GetCurrentCart(ctx, userID)
 }
 
-func (s *CartService) AddItemToCart(ctx context.Context, cartID, productID uuid.UUID, quantity int) error {
-	cart, err := s.repo.GetByID(ctx, cartID)
-	if err != nil {
-		return err
-	}
-
-	existingItem, err := s.cartItemRepo.GetByCartAndProduct(ctx, cartID, productID)
+func (s *CartService) AddItemToCart(ctx context.Context, cartID uuid.UUID, item *models.CartItem) error {
+	existingItem, err := s.cartItemRepo.GetByCartAndProduct(ctx, cartID, item.ProductID)
 
 	if err == nil {
-		existingItem.Quantity += quantity
+		existingItem.Quantity += item.Quantity
 		return s.cartItemRepo.Update(ctx, existingItem)
 	}
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		newItem := &models.CartItem{
-			CartID:      cart.ID,
-			ProductID:   productID,
-			Quantity:    quantity,
+			CartID:      cartID,
+			ProductID:   item.ProductID,
+			Quantity:    item.Quantity,
 			IsPurchased: false,
 		}
 
@@ -53,4 +48,17 @@ func (s *CartService) AddItemToCart(ctx context.Context, cartID, productID uuid.
 	}
 
 	return err
+}
+
+func (s *CartService) RemoveItemFromCart(ctx context.Context, cartID uuid.UUID, item *models.CartItem) error {
+	existingItem, err := s.cartItemRepo.GetByCartAndProduct(ctx, cartID, item.ProductID)
+	if err != nil {
+		return err
+	}
+
+	err = s.cartItemRepo.Delete(ctx, existingItem.ID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
