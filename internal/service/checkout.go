@@ -15,6 +15,7 @@ type CheckoutService struct {
 	cartRepo    repository.CartRepository
 	orderRepo   repository.OrderRepository
 	paymentRepo repository.PaymentRepository
+	productRepo repository.ProductRepository
 
 	db *gorm.DB
 }
@@ -31,6 +32,7 @@ func (s *CheckoutService) StartCheckout(ctx context.Context, userID uuid.UUID, s
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		txCartRepo := s.cartRepo.WithTx(tx)
 		txOrderRepo := s.orderRepo.WithTx(tx)
+		txProductRepo := s.productRepo.WithTx(tx)
 
 		cart, err := txCartRepo.GetCurrentCart(ctx, userID)
 		if err != nil {
@@ -52,6 +54,12 @@ func (s *CheckoutService) StartCheckout(ctx context.Context, userID uuid.UUID, s
 				ProductID:       item.ProductID,
 				Quantity:        item.Quantity,
 				PriceAtPurchase: item.Product.Price,
+			}
+
+			// Reduce stock quantity
+			err = txProductRepo.UpdateStock(ctx, item.ProductID, item.Quantity)
+			if err != nil {
+				return err
 			}
 		}
 
