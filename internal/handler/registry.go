@@ -4,6 +4,7 @@ import (
 	"github.com/Nios-V/Go-ecommerce-API/internal/repository"
 	"github.com/Nios-V/Go-ecommerce-API/internal/service"
 	"github.com/go-playground/validator/v10"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,7 @@ type Registry struct {
 	Validate *validator.Validate
 }
 
-func NewRegistry(db *gorm.DB) *Registry {
+func NewRegistry(db *gorm.DB, rdb *redis.Client) *Registry {
 	v := validator.New()
 
 	// Initialize repositories

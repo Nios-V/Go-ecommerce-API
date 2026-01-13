@@ -31,7 +31,7 @@ func main() {
 		log.Fatal("Migration Error: ", err)
 	}
 
-	registry := handler.NewRegistry(cfg.DB)
+	registry := handler.NewRegistry(cfg.DB, cfg.RDB)
 
 	r := chi.NewRouter()
 	router.SetupRoutes(r, registry)
