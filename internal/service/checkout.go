@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/Nios-V/Go-ecommerce-API/internal/models"
+	"github.com/Nios-V/Go-ecommerce-API/internal/models/enums"
 	"github.com/Nios-V/Go-ecommerce-API/internal/repository"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -75,6 +77,42 @@ func (s *CheckoutService) StartCheckout(ctx context.Context, userID uuid.UUID, s
 	})
 }
 
-// func (s *CheckoutService) ConfirmCheckout(ctx context.Context, userID uuid.UUID, paymentInfo map[string]interface{}) error {
+func (s *CheckoutService) ConfirmCheckout(ctx context.Context, userID, orderID uuid.UUID, method *enums.PaymentMethod) error {
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		txOrderRepo := s.orderRepo.WithTx(tx)
+		txPaymentRepo := s.paymentRepo.WithTx(tx)
 
-// }
+		order, err := txOrderRepo.GetByID(ctx, orderID)
+		if err != nil {
+			return err
+		}
+
+		if order.UserID != userID {
+			return gorm.ErrRecordNotFound
+		}
+
+		// TODO: Create the payment in a payment gateway and verify success; here we just simulate it as a successful payment
+		paymentStatus := enums.PaymentStatusCompleted
+		now := time.Now()
+		payment := &models.Payment{
+			OrderID: order.ID,
+			Amount:  order.Total,
+			Method:  method,
+			Status:  &paymentStatus,
+			PaidAt:  &now,
+		}
+
+		err = txPaymentRepo.Create(ctx, payment)
+		if err != nil {
+			return err
+		}
+		status := enums.OrderStatusPaid
+		order.Status = &status
+
+		err = txOrderRepo.Update(ctx, order)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}

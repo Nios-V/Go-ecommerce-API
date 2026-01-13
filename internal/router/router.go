@@ -66,7 +66,7 @@ func registerCart(r chi.Router, h *handler.CartHandler) {
 func registerCheckout(r chi.Router, h *handler.CheckoutHandler) {
 	r.Route("/users/{user_id}/checkout", func(r chi.Router) {
 		r.With(internalMiddleware.AuthMiddleware).Post("/", h.StartCheckout)
-		r.With(internalMiddleware.AuthMiddleware).Put("/confirm", h.ConfirmCheckout)
+		r.With(internalMiddleware.AuthMiddleware).Put("/{order_id}/confirm", h.ConfirmCheckout)
 	})
 }
 

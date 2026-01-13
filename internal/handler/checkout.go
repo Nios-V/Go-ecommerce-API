@@ -69,5 +69,51 @@ func (h *CheckoutHandler) StartCheckout(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *CheckoutHandler) ConfirmCheckout(w http.ResponseWriter, r *http.Request) {
-	// Implementation of checkout processing goes here
+	var req dto.ConfirmCheckoutRequest
+
+	idStr := chi.URLParam(r, "id")
+	id, err := uuid.Parse(idStr)
+
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	orderIdStr := chi.URLParam(r, "order_id")
+	orderId, err := uuid.Parse(orderIdStr)
+
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	if id != r.Context().Value("user_id").(uuid.UUID) {
+		response.Error(w, http.StatusForbidden, "Access denied")
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			response.Error(w, http.StatusBadRequest, "Empty body")
+			return
+		}
+		response.Error(w, http.StatusBadRequest, "Invalid JSON")
+		return
+	}
+
+	defer r.Body.Close()
+	err = h.validate.Struct(&req)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Validation error: "+err.Error())
+		return
+	}
+	paymentMethod := req.PaymentMethod
+
+	err = h.checkoutService.ConfirmCheckout(r.Context(), id, orderId, &paymentMethod)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Failed to confirm checkout: "+err.Error())
+		return
+	}
+	response.JSON(w, http.StatusOK, map[string]string{"message": "Checkout confirmed successfully"})
 }
