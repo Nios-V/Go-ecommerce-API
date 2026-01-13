@@ -224,7 +224,3 @@ func (h *CartHandler) ClearCart(w http.ResponseWriter, r *http.Request) {
 	}
 	response.JSON(w, http.StatusOK, map[string]string{"message": "Cart cleared"})
 }
-
-func (h *CartHandler) Checkout(w http.ResponseWriter, r *http.Request) {
-	// Implementation for checking out the cart
-}

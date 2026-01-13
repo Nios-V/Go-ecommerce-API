@@ -12,6 +12,7 @@ type CartRepository interface {
 	BaseRepository[models.Cart]
 	WithTx(tx *gorm.DB) CartRepository
 	GetCurrentCart(ctx context.Context, userID uuid.UUID) (*models.Cart, error)
+	PurchaseCartItems(ctx context.Context, cartID uuid.UUID) error
 }
 
 type cartRepository struct {
@@ -42,4 +43,11 @@ func (r *cartRepository) GetCurrentCart(ctx context.Context, userID uuid.UUID) (
 		return nil, err
 	}
 	return &cart, nil
+}
+
+func (r *cartRepository) PurchaseCartItems(ctx context.Context, cartID uuid.UUID) error {
+	return r.db.WithContext(ctx).
+		Model(&models.CartItem{}).
+		Where("cart_id = ? AND is_purchased = ?", cartID, false).
+		Update("is_purchased", true).Error
 }

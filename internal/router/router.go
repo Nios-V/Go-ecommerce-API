@@ -27,6 +27,7 @@ func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 		registerProduct(r, h.Product)
 		registerUser(r, h.User)
 		registerAddress(r, h.Address)
+		registerCheckout(r, h.Checkout)
 	})
 }
 
@@ -59,6 +60,13 @@ func registerCart(r chi.Router, h *handler.CartHandler) {
 		r.With(internalMiddleware.AuthMiddleware).Post("{id}/items", h.AddItem)
 		r.With(internalMiddleware.AuthMiddleware).Delete("/{id}/items", h.RemoveItem)
 		r.With(internalMiddleware.AuthMiddleware).Put("/{id}/items", h.UpdateItemQuantity)
+	})
+}
+
+func registerCheckout(r chi.Router, h *handler.CheckoutHandler) {
+	r.Route("/users/{user_id}/checkout", func(r chi.Router) {
+		r.With(internalMiddleware.AuthMiddleware).Post("/", h.StartCheckout)
+		r.With(internalMiddleware.AuthMiddleware).Put("/confirm", h.ConfirmCheckout)
 	})
 }
 
