@@ -1,5 +1,16 @@
 basePath: /api/v1
 definitions:
+  dto.AddCartItemRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
   dto.AddressResponse:
     properties:
       city:
@@ -19,6 +30,26 @@ definitions:
       user_id:
         type: string
       zip_code:
+        type: string
+    type: object
+  dto.CartItemResponse:
+    properties:
+      is_purchased:
+        type: boolean
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  dto.CartResponse:
+    properties:
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/dto.CartItemResponse'
+        type: array
+      user_id:
         type: string
     type: object
   dto.CreateAddressRequest:
@@ -55,6 +86,17 @@ definitions:
     - street
     - user_id
     type: object
+  dto.RemoveCartItemRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
   dto.UpdateAddressRequest:
     properties:
       city:
@@ -80,6 +122,17 @@ definitions:
       zip_code:
         maxLength: 20
         type: string
+    type: object
+  dto.UpdateCartItemRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - product_id
+    - quantity
     type: object
   response.StandardResponse:
     properties:
@@ -247,6 +300,204 @@ paths:
       summary: Update an address
       tags:
       - Addresses
+  /users/{user_id}/cart:
+    get:
+      consumes:
+      - application/json
+      description: View the user's cart
+      parameters:
+      - description: User ID
+        format: uuid
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: View cart
+      tags:
+      - Carts
+  /users/{user_id}/carts/{id}/clear:
+    post:
+      consumes:
+      - application/json
+      description: Clear all items from the user's cart
+      parameters:
+      - description: User ID
+        format: uuid
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Cart ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Clear cart
+      tags:
+      - Carts
+  /users/{user_id}/carts/{id}/items:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an item from the user's cart
+      parameters:
+      - description: User ID
+        format: uuid
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Cart ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Item to remove
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RemoveCartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Remove item from cart
+      tags:
+      - Carts
+    post:
+      consumes:
+      - application/json
+      description: Add an item to the user's cart
+      parameters:
+      - description: User ID
+        format: uuid
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Cart ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Item to add
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddCartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Add item to cart
+      tags:
+      - Carts
+    put:
+      consumes:
+      - application/json
+      description: Update the quantity of an item in the user's cart
+      parameters:
+      - description: User ID
+        format: uuid
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Cart ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Item quantity to update
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Update item quantity in cart
+      tags:
+      - Carts
 securityDefinitions:
   BearerAuth:
     in: header

@@ -26,6 +26,19 @@ func NewCartHandler(s *service.CartService, v *validator.Validate) *CartHandler 
 	}
 }
 
+// AddItem godoc
+// @Summary Add item to cart
+// @Description Add an item to the user's cart
+// @Tags Carts
+// @Accept json
+// @Produce json
+// @Param user_id path string true "User ID" format(uuid)
+// @Param id path string true "Cart ID" format(uuid)
+// @Param item body dto.AddCartItemRequest true "Item to add"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /users/{user_id}/carts/{id}/items [post]
 func (h *CartHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	var req dto.AddCartItemRequest
 
@@ -75,6 +88,19 @@ func (h *CartHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]string{"message": "Item added to cart"})
 }
 
+// RemoveItem godoc
+// @Summary Remove item from cart
+// @Description Remove an item from the user's cart
+// @Tags Carts
+// @Accept json
+// @Produce json
+// @Param user_id path string true "User ID" format(uuid)
+// @Param id path string true "Cart ID" format(uuid)
+// @Param item body dto.RemoveCartItemRequest true "Item to remove"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /users/{user_id}/carts/{id}/items [delete]
 func (h *CartHandler) RemoveItem(w http.ResponseWriter, r *http.Request) {
 	var req dto.RemoveCartItemRequest
 
@@ -123,6 +149,17 @@ func (h *CartHandler) RemoveItem(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]string{"message": "Item removed from cart"})
 }
 
+// ViewCart godoc
+// @Summary View cart
+// @Description View the user's cart
+// @Tags Carts
+// @Accept json
+// @Produce json
+// @Param user_id path string true "User ID" format(uuid)
+// @Success 200 {object} dto.CartResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /users/{user_id}/cart [get]
 func (h *CartHandler) ViewCart(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "user_id")
 
@@ -148,6 +185,19 @@ func (h *CartHandler) ViewCart(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+// UpdateItemQuantity godoc
+// @Summary Update item quantity in cart
+// @Description Update the quantity of an item in the user's cart
+// @Tags Carts
+// @Accept json
+// @Produce json
+// @Param user_id path string true "User ID" format(uuid)
+// @Param id path string true "Cart ID" format(uuid)
+// @Param item body dto.UpdateCartItemRequest true "Item quantity to update"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /users/{user_id}/carts/{id}/items [put]
 func (h *CartHandler) UpdateItemQuantity(w http.ResponseWriter, r *http.Request) {
 	var req dto.UpdateCartItemRequest
 
@@ -197,6 +247,18 @@ func (h *CartHandler) UpdateItemQuantity(w http.ResponseWriter, r *http.Request)
 	response.JSON(w, http.StatusOK, map[string]string{"message": "Item quantity updated"})
 }
 
+// ClearCart godoc
+// @Summary Clear cart
+// @Description Clear all items from the user's cart
+// @Tags Carts
+// @Accept json
+// @Produce json
+// @Param user_id path string true "User ID" format(uuid)
+// @Param id path string true "Cart ID" format(uuid)
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /users/{user_id}/carts/{id}/clear [post]
 func (h *CartHandler) ClearCart(w http.ResponseWriter, r *http.Request) {
 	userIdStr := chi.URLParam(r, "user_id")
 	user_id, err := uuid.Parse(userIdStr)
