@@ -39,7 +39,7 @@ func NewRegistry(db *gorm.DB, rdb *redis.Client) *Registry {
 	cartService := service.NewCartService(db, cartRepo, cartItemRepo, productRepo)
 	checkoutService := service.NewCheckoutService(cartRepo, orderRepo, paymentRepo, addressRepo)
 	productService := service.NewProductService(db, rdb, productRepo)
-	userService := service.NewUserService(db, userRepo, cartRepo, roleRepo)
+	userService := service.NewUserService(db, rdb, userRepo, cartRepo, roleRepo)
 	addressService := service.NewAddressService(db, addressRepo)
 
 	// Initialize handlers
