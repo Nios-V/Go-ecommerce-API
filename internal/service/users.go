@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Nios-V/Go-ecommerce-API/internal/models"
 	"github.com/Nios-V/Go-ecommerce-API/internal/repository"
@@ -112,7 +113,7 @@ func (s *UserService) GetByID(ctx context.Context, id uuid.UUID) (*models.User, 
 	}
 	userJSON, err := json.Marshal(user)
 	if err == nil {
-		s.rdb.Set(ctx, cacheKey, userJSON, 0)
+		s.rdb.Set(ctx, cacheKey, userJSON, 10*time.Minute)
 	}
 	return user, nil
 }
