@@ -27,6 +27,17 @@ func NewProductHandler(s *service.ProductService, v *validator.Validate) *Produc
 	}
 }
 
+// GetProductByID godoc
+// @Summary Get product by ID
+// @Description Get product details by ID
+// @Tags Products
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID" format(uuid)
+// @Success 200 {object} dto.ProductResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /products/{id} [get]
 func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
@@ -46,6 +57,17 @@ func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+// ListProducts godoc
+// @Summary List products
+// @Description Get a paginated list of products
+// @Tags Products
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {array} dto.ProductResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /products [get]
 func (h *ProductHandler) List(w http.ResponseWriter, r *http.Request) {
 	pageStr := r.URL.Query().Get("page")
 	limitStr := r.URL.Query().Get("limit")
@@ -71,6 +93,17 @@ func (h *ProductHandler) List(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+// CreateProduct godoc
+// @Summary Create a new product
+// @Description Create a new product
+// @Tags Products
+// @Accept json
+// @Produce json
+// @Param product body dto.CreateProductRequest true "Product data"
+// @Success 201 {object} dto.ProductResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /products [post]
 func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateProductRequest
 
@@ -101,6 +134,18 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, product)
 }
 
+// UpdateProduct godoc
+// @Summary Update an existing product
+// @Description Update an existing product by ID
+// @Tags Products
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID" format(uuid)
+// @Param product body dto.UpdateProductRequest true "Product data"
+// @Success 200 {object} dto.ProductResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /products/{id} [put]
 func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
@@ -144,6 +189,18 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, product)
 }
 
+// UpdateProductStock godoc
+// @Summary Update product stock
+// @Description Update the stock quantity of an existing product by ID
+// @Tags Products
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID" format(uuid)
+// @Param stock body dto.UpdateProductStockRequest true "Updated stock data"
+// @Success 200 {object} dto.ProductResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /products/{id}/stock [put]
 func (h *ProductHandler) UpdateStock(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
@@ -187,6 +244,17 @@ func (h *ProductHandler) UpdateStock(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, product)
 }
 
+// DeleteProduct godoc
+// @Summary Delete a product
+// @Description Delete an existing product by ID
+// @Tags Products
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID" format(uuid)
+// @Success 204 {object} nil
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /products/{id} [delete]
 func (h *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	IdStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(IdStr)
