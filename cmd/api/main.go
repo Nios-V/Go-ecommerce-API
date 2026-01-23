@@ -13,6 +13,19 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// @title Go Ecommerce API
+// @version 1.0
+// @description This is a sample server for an e-commerce application.
+
+// @contact.name API Support
+// @contact.email niosv.1104@gmail.com
+
+// @host localhost:8080
+// @BasePath /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	cfg := config.LoadConfig()
 	err := cfg.DB.AutoMigrate(

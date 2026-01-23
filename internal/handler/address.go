@@ -27,6 +27,17 @@ func NewAddressHandler(s *service.AddressService, v *validator.Validate) *Addres
 	}
 }
 
+// GetAddressByID godoc
+// @Summary Get address by ID
+// @Description Get address details by ID
+// @Tags Addresses
+// @Accept json
+// @Produce json
+// @Param id path string true "Address ID" format(uuid)
+// @Success 200 {object} dto.AddressResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /addresses/{id} [get]
 func (h *AddressHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
@@ -46,6 +57,17 @@ func (h *AddressHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+// ListAddresses godoc
+// @Summary List addresses
+// @Description Get a paginated list of addresses
+// @Tags Addresses
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {array} dto.AddressResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /addresses [get]
 func (h *AddressHandler) List(w http.ResponseWriter, r *http.Request) {
 	pageStr := r.URL.Query().Get("page")
 	limitStr := r.URL.Query().Get("limit")
@@ -71,6 +93,17 @@ func (h *AddressHandler) List(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+// CreateAddress godoc
+// @Summary Create a new address
+// @Description Create a new address
+// @Tags Addresses
+// @Accept json
+// @Produce json
+// @Param address body dto.CreateAddressRequest true "Address data"
+// @Success 201 {object} dto.AddressResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /addresses [post]
 func (h *AddressHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateAddressRequest
 
@@ -101,6 +134,18 @@ func (h *AddressHandler) Create(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, address)
 }
 
+// UpdateAddress godoc
+// @Summary Update an address
+// @Description Update an existing address by ID
+// @Tags Addresses
+// @Accept json
+// @Produce json
+// @Param id path string true "Address ID" format(uuid)
+// @Param address body dto.UpdateAddressRequest true "Updated address data"
+// @Success 200 {object} dto.AddressResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /addresses/{id} [put]
 func (h *AddressHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
@@ -144,6 +189,17 @@ func (h *AddressHandler) Update(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, address)
 }
 
+// DeleteAddress godoc
+// @Summary Delete an address
+// @Description Delete an address by ID
+// @Tags Addresses
+// @Accept json
+// @Produce json
+// @Param id path string true "Address ID" format(uuid)
+// @Success 204 "No Content"
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /addresses/{id} [delete]
 func (h *AddressHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	IdStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(IdStr)

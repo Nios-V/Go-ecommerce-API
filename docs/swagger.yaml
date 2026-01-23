@@ -1,0 +1,255 @@
+basePath: /api/v1
+definitions:
+  dto.AddressResponse:
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      id:
+        type: string
+      is_default_billing:
+        type: boolean
+      is_default_shipping:
+        type: boolean
+      state:
+        type: string
+      street:
+        type: string
+      user_id:
+        type: string
+      zip_code:
+        type: string
+    type: object
+  dto.CreateAddressRequest:
+    properties:
+      city:
+        maxLength: 50
+        minLength: 2
+        type: string
+      country:
+        maxLength: 50
+        minLength: 2
+        type: string
+      is_default_billing:
+        type: boolean
+      is_default_shipping:
+        type: boolean
+      state:
+        maxLength: 50
+        minLength: 2
+        type: string
+      street:
+        maxLength: 120
+        minLength: 5
+        type: string
+      user_id:
+        type: string
+      zip_code:
+        maxLength: 20
+        type: string
+    required:
+    - city
+    - country
+    - state
+    - street
+    - user_id
+    type: object
+  dto.UpdateAddressRequest:
+    properties:
+      city:
+        maxLength: 50
+        minLength: 2
+        type: string
+      country:
+        maxLength: 50
+        minLength: 2
+        type: string
+      is_default_billing:
+        type: boolean
+      is_default_shipping:
+        type: boolean
+      state:
+        maxLength: 50
+        minLength: 2
+        type: string
+      street:
+        maxLength: 120
+        minLength: 5
+        type: string
+      zip_code:
+        maxLength: 20
+        type: string
+    type: object
+  response.StandardResponse:
+    properties:
+      data: {}
+      error:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: niosv.1104@gmail.com
+    name: API Support
+  description: This is a sample server for an e-commerce application.
+  title: Go Ecommerce API
+  version: "1.0"
+paths:
+  /addresses:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of addresses
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.AddressResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: List addresses
+      tags:
+      - Addresses
+    post:
+      consumes:
+      - application/json
+      description: Create a new address
+      parameters:
+      - description: Address data
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAddressRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.AddressResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Create a new address
+      tags:
+      - Addresses
+  /addresses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an address by ID
+      parameters:
+      - description: Address ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Delete an address
+      tags:
+      - Addresses
+    get:
+      consumes:
+      - application/json
+      description: Get address details by ID
+      parameters:
+      - description: Address ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AddressResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Get address by ID
+      tags:
+      - Addresses
+    put:
+      consumes:
+      - application/json
+      description: Update an existing address by ID
+      parameters:
+      - description: Address ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated address data
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAddressRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AddressResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Update an address
+      tags:
+      - Addresses
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
