@@ -951,6 +951,128 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/checkout": {
+            "post": {
+                "description": "Initiate the checkout process for a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Checkout"
+                ],
+                "summary": "Start checkout process",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Checkout data",
+                        "name": "checkout",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CheckoutRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/checkout/{order_id}/confirm": {
+            "put": {
+                "description": "Confirm the checkout process for a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Checkout"
+                ],
+                "summary": "Confirm checkout",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Order ID",
+                        "name": "order_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Confirm checkout data",
+                        "name": "checkout",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ConfirmCheckoutRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}/cart": {
             "get": {
                 "description": "View the user's cart",
@@ -996,8 +1118,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{user_id}/carts/{id}/clear": {
-            "post": {
+        "/users/{user_id}/cart/{id}/": {
+            "delete": {
                 "description": "Clear all items from the user's cart",
                 "consumes": [
                     "application/json"
@@ -1052,7 +1174,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{user_id}/carts/{id}/items": {
+        "/users/{user_id}/cart/{id}/items": {
             "put": {
                 "description": "Update the quantity of an item in the user's cart",
                 "consumes": [
@@ -1335,6 +1457,41 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CheckoutRequest": {
+            "type": "object",
+            "required": [
+                "billing_address_id",
+                "shipping_address_id"
+            ],
+            "properties": {
+                "billing_address_id": {
+                    "type": "string"
+                },
+                "shipping_address_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ConfirmCheckoutRequest": {
+            "type": "object",
+            "required": [
+                "payment_method"
+            ],
+            "properties": {
+                "payment_method": {
+                    "enum": [
+                        "credit_card",
+                        "paypal",
+                        "bank_transfer"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.PaymentMethod"
+                        }
+                    ]
                 }
             }
         },
@@ -1649,6 +1806,21 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "enums.PaymentMethod": {
+            "type": "string",
+            "enum": [
+                "CREDIT_CARD",
+                "PAYPAL",
+                "BANK_TRANSFER",
+                "CASH_ON_DELIVERY"
+            ],
+            "x-enum-varnames": [
+                "PaymentMethodCreditCard",
+                "PaymentMethodPayPal",
+                "PaymentMethodBankTransfer",
+                "PaymentMethodCashOnDelivery"
+            ]
         },
         "response.StandardResponse": {
             "type": "object",

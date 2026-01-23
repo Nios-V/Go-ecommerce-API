@@ -29,7 +29,7 @@ func NewCheckoutHandler(s *service.CheckoutService, v *validator.Validate) *Chec
 // StartCheckout godoc
 // @Summary Start checkout process
 // @Description Initiate the checkout process for a user
-// @Tags Checkouts
+// @Tags Checkout
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID" format(uuid)
@@ -83,7 +83,7 @@ func (h *CheckoutHandler) StartCheckout(w http.ResponseWriter, r *http.Request) 
 // ConfirmCheckout godoc
 // @Summary Confirm checkout
 // @Description Confirm the checkout process for a user
-// @Tags Checkouts
+// @Tags Checkout
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID" format(uuid)

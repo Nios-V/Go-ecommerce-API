@@ -61,6 +61,28 @@ definitions:
       name:
         type: string
     type: object
+  dto.CheckoutRequest:
+    properties:
+      billing_address_id:
+        type: string
+      shipping_address_id:
+        type: string
+    required:
+    - billing_address_id
+    - shipping_address_id
+    type: object
+  dto.ConfirmCheckoutRequest:
+    properties:
+      payment_method:
+        allOf:
+        - $ref: '#/definitions/enums.PaymentMethod'
+        enum:
+        - credit_card
+        - paypal
+        - bank_transfer
+    required:
+    - payment_method
+    type: object
   dto.CreateAddressRequest:
     properties:
       city:
@@ -285,6 +307,18 @@ definitions:
       last_name:
         type: string
     type: object
+  enums.PaymentMethod:
+    enum:
+    - CREDIT_CARD
+    - PAYPAL
+    - BANK_TRANSFER
+    - CASH_ON_DELIVERY
+    type: string
+    x-enum-varnames:
+    - PaymentMethodCreditCard
+    - PaymentMethodPayPal
+    - PaymentMethodBankTransfer
+    - PaymentMethodCashOnDelivery
   response.StandardResponse:
     properties:
       data: {}
@@ -888,6 +922,88 @@ paths:
       summary: Update an existing user
       tags:
       - Users
+  /users/{id}/checkout:
+    post:
+      consumes:
+      - application/json
+      description: Initiate the checkout process for a user
+      parameters:
+      - description: User ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Checkout data
+        in: body
+        name: checkout
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CheckoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Start checkout process
+      tags:
+      - Checkout
+  /users/{id}/checkout/{order_id}/confirm:
+    put:
+      consumes:
+      - application/json
+      description: Confirm the checkout process for a user
+      parameters:
+      - description: User ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Order ID
+        format: uuid
+        in: path
+        name: order_id
+        required: true
+        type: string
+      - description: Confirm checkout data
+        in: body
+        name: checkout
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ConfirmCheckoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Confirm checkout
+      tags:
+      - Checkout
   /users/{user_id}/cart:
     get:
       consumes:
@@ -918,8 +1034,8 @@ paths:
       summary: View cart
       tags:
       - Carts
-  /users/{user_id}/carts/{id}/clear:
-    post:
+  /users/{user_id}/cart/{id}/:
+    delete:
       consumes:
       - application/json
       description: Clear all items from the user's cart
@@ -956,7 +1072,7 @@ paths:
       summary: Clear cart
       tags:
       - Carts
-  /users/{user_id}/carts/{id}/items:
+  /users/{user_id}/cart/{id}/items:
     delete:
       consumes:
       - application/json
