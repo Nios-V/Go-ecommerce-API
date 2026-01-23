@@ -5,10 +5,12 @@ import (
 	"os"
 	"strconv"
 
+	_ "github.com/Nios-V/Go-ecommerce-API/docs"
 	"github.com/Nios-V/Go-ecommerce-API/internal/handler"
 	internalMiddleware "github.com/Nios-V/Go-ecommerce-API/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func SetupRoutes(r *chi.Mux, h *handler.Registry) {
@@ -20,6 +22,8 @@ func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
+
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		registerCategory(r, h.Category)
