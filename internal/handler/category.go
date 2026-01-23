@@ -27,6 +27,17 @@ func NewCategoryHandler(s *service.CategoryService, v *validator.Validate) *Cate
 	}
 }
 
+// GetCategoryByID godoc
+// @Summary Get category by ID
+// @Description Get category details by ID
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param id path string true "Category ID" format(uuid)
+// @Success 200 {object} dto.CategoryResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /categories/{id} [get]
 func (h *CategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
@@ -47,6 +58,18 @@ func (h *CategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+// ListCategories godoc
+// @Summary List categories
+// @Description Get a paginated list of categories
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {array} dto.CategoryResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /categories [get]
 func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	pageStr := r.URL.Query().Get("page")
 	limitStr := r.URL.Query().Get("limit")
@@ -73,6 +96,17 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, res)
 }
 
+// CreateCategory godoc
+// @Summary Create a new category
+// @Description Create a new category
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param category body dto.CreateCategoryRequest true "Category data"
+// @Success 201 {object} dto.CategoryResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /categories [post]
 func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateCategoryRequest
 
@@ -107,6 +141,18 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, category)
 }
 
+// UpdateCategory godoc
+// @Summary Update a category
+// @Description Update an existing category by ID
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param id path string true "Category ID" format(uuid)
+// @Param category body dto.UpdateCategoryRequest true "Updated category data"
+// @Success 200 {object} dto.CategoryResponse
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /categories/{id} [put]
 func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
@@ -150,6 +196,17 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, category)
 }
 
+// DeleteCategory godoc
+// @Summary Delete a category
+// @Description Delete a category by ID
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param id path string true "Category ID" format(uuid)
+// @Success 204
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /categories/{id} [delete]
 func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	IdStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(IdStr)

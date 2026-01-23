@@ -52,6 +52,15 @@ definitions:
       user_id:
         type: string
     type: object
+  dto.CategoryResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   dto.CreateAddressRequest:
     properties:
       city:
@@ -85,6 +94,18 @@ definitions:
     - state
     - street
     - user_id
+    type: object
+  dto.CreateCategoryRequest:
+    properties:
+      description:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - name
     type: object
   dto.RemoveCartItemRequest:
     properties:
@@ -133,6 +154,16 @@ definitions:
     required:
     - product_id
     - quantity
+    type: object
+  dto.UpdateCategoryRequest:
+    properties:
+      description:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 50
+        minLength: 3
+        type: string
     type: object
   response.StandardResponse:
     properties:
@@ -300,6 +331,161 @@ paths:
       summary: Update an address
       tags:
       - Addresses
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of categories
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CategoryResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: List categories
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/json
+      description: Create a new category
+      parameters:
+      - description: Category data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Create a new category
+      tags:
+      - Categories
+  /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a category by ID
+      parameters:
+      - description: Category ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Delete a category
+      tags:
+      - Categories
+    get:
+      consumes:
+      - application/json
+      description: Get category details by ID
+      parameters:
+      - description: Category ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Get category by ID
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/json
+      description: Update an existing category by ID
+      parameters:
+      - description: Category ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated category data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      summary: Update a category
+      tags:
+      - Categories
   /users/{user_id}/cart:
     get:
       consumes:
