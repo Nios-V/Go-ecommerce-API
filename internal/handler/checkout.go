@@ -26,6 +26,18 @@ func NewCheckoutHandler(s *service.CheckoutService, v *validator.Validate) *Chec
 	}
 }
 
+// StartCheckout godoc
+// @Summary Start checkout process
+// @Description Initiate the checkout process for a user
+// @Tags Checkouts
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID" format(uuid)
+// @Param checkout body dto.CheckoutRequest true "Checkout data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /users/{id}/checkout [post]
 func (h *CheckoutHandler) StartCheckout(w http.ResponseWriter, r *http.Request) {
 	var req dto.CheckoutRequest
 
@@ -68,6 +80,19 @@ func (h *CheckoutHandler) StartCheckout(w http.ResponseWriter, r *http.Request) 
 	response.JSON(w, http.StatusOK, map[string]string{"message": "Checkout started successfully"})
 }
 
+// ConfirmCheckout godoc
+// @Summary Confirm checkout
+// @Description Confirm the checkout process for a user
+// @Tags Checkouts
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID" format(uuid)
+// @Param order_id path string true "Order ID" format(uuid)
+// @Param checkout body dto.ConfirmCheckoutRequest true "Confirm checkout data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse
+// @Router /users/{id}/checkout/{order_id}/confirm [put]
 func (h *CheckoutHandler) ConfirmCheckout(w http.ResponseWriter, r *http.Request) {
 	var req dto.ConfirmCheckoutRequest
 

@@ -38,7 +38,7 @@ func NewCartHandler(s *service.CartService, v *validator.Validate) *CartHandler 
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} response.StandardResponse
 // @Failure 500 {object} response.StandardResponse
-// @Router /users/{user_id}/carts/{id}/items [post]
+// @Router /users/{user_id}/cart/{id}/items [post]
 func (h *CartHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	var req dto.AddCartItemRequest
 
@@ -100,7 +100,7 @@ func (h *CartHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} response.StandardResponse
 // @Failure 500 {object} response.StandardResponse
-// @Router /users/{user_id}/carts/{id}/items [delete]
+// @Router /users/{user_id}/cart/{id}/items [delete]
 func (h *CartHandler) RemoveItem(w http.ResponseWriter, r *http.Request) {
 	var req dto.RemoveCartItemRequest
 
@@ -197,7 +197,7 @@ func (h *CartHandler) ViewCart(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} response.StandardResponse
 // @Failure 500 {object} response.StandardResponse
-// @Router /users/{user_id}/carts/{id}/items [put]
+// @Router /users/{user_id}/cart/{id}/items [put]
 func (h *CartHandler) UpdateItemQuantity(w http.ResponseWriter, r *http.Request) {
 	var req dto.UpdateCartItemRequest
 
@@ -258,7 +258,7 @@ func (h *CartHandler) UpdateItemQuantity(w http.ResponseWriter, r *http.Request)
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} response.StandardResponse
 // @Failure 500 {object} response.StandardResponse
-// @Router /users/{user_id}/carts/{id}/clear [post]
+// @Router /users/{user_id}/cart/{id}/ [delete]
 func (h *CartHandler) ClearCart(w http.ResponseWriter, r *http.Request) {
 	userIdStr := chi.URLParam(r, "user_id")
 	user_id, err := uuid.Parse(userIdStr)
