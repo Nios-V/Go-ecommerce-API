@@ -4,16 +4,18 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	_ "github.com/Nios-V/Go-ecommerce-API/docs"
 	"github.com/Nios-V/Go-ecommerce-API/internal/handler"
 	internalMiddleware "github.com/Nios-V/Go-ecommerce-API/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/redis/go-redis/v9"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-func SetupRoutes(r *chi.Mux, h *handler.Registry) {
+func SetupRoutes(r *chi.Mux, h *handler.Registry, rdb *redis.Client) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(MaxBodySize)
@@ -26,6 +28,12 @@ func SetupRoutes(r *chi.Mux, h *handler.Registry) {
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	r.Route("/api/v1", func(r chi.Router) {
+		limit, err := strconv.Atoi(os.Getenv("RATE_LIMIT"))
+		if err != nil {
+			limit = 60
+		}
+		r.Use(internalMiddleware.RateLimit(rdb, limit, time.Minute))
+
 		registerCategory(r, h.Category)
 		registerCart(r, h.Cart)
 		registerProduct(r, h.Product)
